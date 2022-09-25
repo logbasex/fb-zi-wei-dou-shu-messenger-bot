@@ -23,7 +23,7 @@ jobs:
       # https://github.com/docker/setup-buildx-action
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v1
 
       # https://viblo.asia/p/github-actions-tutorials-setup-docker-hub-github-workflow-cicd-pipeline-huong-dan-tung-buoc-aWj53bywl6m
       - name: Login to DockerHub
