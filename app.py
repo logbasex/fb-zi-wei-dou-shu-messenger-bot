@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, request, make_response, render_template
-import requests, re
+import requests, re, os
 
 app = Flask(__name__)
 
@@ -10,7 +10,7 @@ app = Flask(__name__)
 # https://viblo.asia/p/xay-dung-chatbot-messenger-cap-nhat-thoi-khoa-bieu-cho-sinh-vien-phan-2-chatbot-don-gian-va-ket-noi-messenger-L4x5xL4m5BM
 # https://stackoverflow.com/questions/64304408/facebook-messengerbot-python-the-callback-url-or-verify-token-couldnt-be-vali/73838717#73838717
 # This is page access token that you get from facebook developer console.
-PAGE_ACCESS_TOKEN = os.getenv('FB_PAGE_ACCESS_TOKEN')
+PAGE_ACCESS_TOKEN = os.environ.get('FB_PAGE_ACCESS_TOKEN')
 # This is API key for facebook messenger.
 API = "https://graph.facebook.com/v13.0/me/messages?access_token="+PAGE_ACCESS_TOKEN
 
