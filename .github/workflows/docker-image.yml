@@ -1,5 +1,6 @@
 # https://event-driven.io/en/how_to_buid_and_push_docker_image_with_github_actions/
 # https://docs.docker.com/ci-cd/github-actions/
+# https://docs.github.com/en/actions/publishing-packages/publishing-docker-images
 name: Docker Image CI
 
 on:
@@ -31,20 +32,14 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-      - name: Login to Github Packages
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Build image and push to Docker Hub and GitHub Container Registry
         uses: docker/build-push-action@v2
+        id: docker_build
         with:
           # relative path to the place where source code with Dockerfile is located
-          context: ./
-          file: ./Dockerfile
+          context: .
+          # file: ./Dockerfile
           # Note: tags has to be all lower-case
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/fb-ziweidoushu-messager-bot/python:latest 
           # build on feature branches, push only on main branch
