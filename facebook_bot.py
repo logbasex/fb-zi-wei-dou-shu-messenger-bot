@@ -1,10 +1,14 @@
-from flask import Flask, request
-import requests
+from flask import Flask, request, make_response
+import requests, re
 
 app = Flask(__name__)
 
+# https://towardsdatascience.com/build-a-chatbot-with-facebook-messenger-in-under-60-minutes-f4c8b8046a91
+# https://www.pragnakalp.com/create-facebook-chatbot-using-python-tutorial-with-examples/
+# https://viblo.asia/p/xay-dung-chatbot-messenger-cap-nhat-thoi-khoa-bieu-cho-sinh-vien-phan-2-chatbot-don-gian-va-ket-noi-messenger-L4x5xL4m5BM
+# https://stackoverflow.com/questions/64304408/facebook-messengerbot-python-the-callback-url-or-verify-token-couldnt-be-vali/73838717#73838717
 # This is page access token that you get from facebook developer console.
-PAGE_ACCESS_TOKEN = '<Your Page Access Token>'
+PAGE_ACCESS_TOKEN = 'EAAGklDGw0IkBAJ0j5nZClYPMVmSvJtnr4rIVksmkI59IYyKrZAjrYiWZCJbA5J8aZBLDYeNZCHI4Ath5ZAZCZCcpG2W5UvxqWO0OPLBCcBwqaXXaAkOtqXcs4q3CvJCf6o5VCIDLr1qPEHOlREp4PUFpKNfLE2xFhuIeg94GSFR4R1DGPlHoZBDub'
 # This is API key for facebook messenger.
 API = "https://graph.facebook.com/v13.0/me/messages?access_token="+PAGE_ACCESS_TOKEN
 
@@ -14,9 +18,9 @@ API = "https://graph.facebook.com/v13.0/me/messages?access_token="+PAGE_ACCESS_T
 @app.route("/", methods=['GET'])
 def fbverify():
     if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
-        if not request.args.get("hub.verify_token") == "<Your verify token>":
+        if not request.args.get("hub.verify_token") == "logbasex":
             return "Verification token missmatch", 403
-        return request.args['hub.challenge'], 200
+        return make_response(request.args['hub.challenge'], 200)
     return "Hello world", 200
 
 # This function return response to facebook messenger.
@@ -122,107 +126,107 @@ def fbwebhook():
             response = requests.post(API, json=request_body).json()
             return response
         # Here we send quick reply response.
-        elif message['text'] == "quickr":
-            request_body = {
-                "recipient": {
-                    "id": sender_id
-                },
-                "messaging_type": "RESPONSE",
-                "message": {
-                    "text": "Pick a color:",
-                    "quick_replies": [
-                        {
-                            "content_type": "text",
-                            "title": "Red",
-                            "payload": "<POSTBACK_PAYLOAD>",
-                            "image_url": "http://example.com/img/red.png"
-                        }, {
-                            "content_type": "text",
-                            "title": "Green",
-                            "payload": "<POSTBACK_PAYLOAD>",
-                            "image_url": "http://example.com/img/green.png"
-                        }
-                    ]
-                }
-            }
-            response = requests.post(API, json=request_body).json()
-            return response
+        # elif message['text'] == "quickr":
+        #     request_body = {
+        #         "recipient": {
+        #             "id": sender_id
+        #         },
+        #         "messaging_type": "RESPONSE",
+        #         "message": {
+        #             "text": "Pick a color:",
+        #             "quick_replies": [
+        #                 {
+        #                     "content_type": "text",
+        #                     "title": "Red",
+        #                     "payload": "<POSTBACK_PAYLOAD>",
+        #                     "image_url": "http://example.com/img/red.png"
+        #                 }, {
+        #                     "content_type": "text",
+        #                     "title": "Green",
+        #                     "payload": "<POSTBACK_PAYLOAD>",
+        #                     "image_url": "http://example.com/img/green.png"
+        #                 }
+        #             ]
+        #         }
+        #     }
+        #     response = requests.post(API, json=request_body).json()
+        #     return response
         # Here we send simple text response.
-        elif message['text'] == "list":
-            request_body = {
-                "recipient": {
-                    "id": "RECIPIENT_ID"
-                },
-                "message": {
-                    "attachment": {
-                        "type": "template",
-                        "payload": {
-                            "template_type": "list",
-                            "top_element_style": "compact",
-                            "elements": [
-                                {
-                                    "title": "Classic T-Shirt Collection",
-                                    "subtitle": "See all our colors",
-                                    "image_url": "https://originalcoastclothing.com/img/collection.png",
-                                    "buttons": [
-                                        {
-                                            "title": "View",
-                                            "type": "web_url",
-                                            "url": "https://originalcoastclothing.com/collection",
-                                            "messenger_extensions": True,
-                                            "webview_height_ratio": "tall",
-                                            "fallback_url": "https://originalcoastclothing.com/"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "title": "Classic White T-Shirt",
-                                    "subtitle": "See all our colors",
-                                    "default_action": {
-                                        "type": "web_url",
-                                        "url": "https://originalcoastclothing.com/view?item=100",
-                                        "messenger_extensions": False,
-                                        "webview_height_ratio": "tall"
-                                    }
-                                },
-                                {
-                                    "title": "Classic Blue T-Shirt",
-                                    "image_url": "https://originalcoastclothing.com/img/blue-t-shirt.png",
-                                    "subtitle": "100% Cotton, 200% Comfortable",
-                                    "default_action": {
-                                        "type": "web_url",
-                                        "url": "https://originalcoastclothing.com/view?item=101",
-                                        "messenger_extensions": True,
-                                        "webview_height_ratio": "tall",
-                                        "fallback_url": "https://originalcoastclothing.com/"
-                                    },
-                                    "buttons": [
-                                        {
-                                            "title": "Shop Now",
-                                            "type": "web_url",
-                                            "url": "https://originalcoastclothing.com/shop?item=101",
-                                            "messenger_extensions": True,
-                                            "webview_height_ratio": "tall",
-                                            "fallback_url": "https://originalcoastclothing.com/"
-                                        }
-                                    ]
-                                }
-                            ],
-                            "buttons": [
-                                {
-                                    "title": "View More",
-                                    "type": "postback",
-                                    "payload": "payload"
-                                }
-                            ]
-                        }
-                    }
-                }
-
-            }
-            response = requests.post(API, json=request_body).json()
-            return response
-        elif message['text'] == "hi":
+        # elif message['text'] == "list":
+        #     request_body = {
+        #         "recipient": {
+        #             "id": "RECIPIENT_ID"
+        #         },
+        #         "message": {
+        #             "attachment": {
+        #                 "type": "template",
+        #                 "payload": {
+        #                     "template_type": "list",
+        #                     "top_element_style": "compact",
+        #                     "elements": [
+        #                         {
+        #                             "title": "Classic T-Shirt Collection",
+        #                             "subtitle": "See all our colors",
+        #                             "image_url": "https://originalcoastclothing.com/img/collection.png",
+        #                             "buttons": [
+        #                                 {
+        #                                     "title": "View",
+        #                                     "type": "web_url",
+        #                                     "url": "https://originalcoastclothing.com/collection",
+        #                                     "messenger_extensions": True,
+        #                                     "webview_height_ratio": "tall",
+        #                                     "fallback_url": "https://originalcoastclothing.com/"
+        #                                 }
+        #                             ]
+        #                         },
+        #                         {
+        #                             "title": "Classic White T-Shirt",
+        #                             "subtitle": "See all our colors",
+        #                             "default_action": {
+        #                                 "type": "web_url",
+        #                                 "url": "https://originalcoastclothing.com/view?item=100",
+        #                                 "messenger_extensions": False,
+        #                                 "webview_height_ratio": "tall"
+        #                             }
+        #                         },
+        #                         {
+        #                             "title": "Classic Blue T-Shirt",
+        #                             "image_url": "https://originalcoastclothing.com/img/blue-t-shirt.png",
+        #                             "subtitle": "100% Cotton, 200% Comfortable",
+        #                             "default_action": {
+        #                                 "type": "web_url",
+        #                                 "url": "https://originalcoastclothing.com/view?item=101",
+        #                                 "messenger_extensions": True,
+        #                                 "webview_height_ratio": "tall",
+        #                                 "fallback_url": "https://originalcoastclothing.com/"
+        #                             },
+        #                             "buttons": [
+        #                                 {
+        #                                     "title": "Shop Now",
+        #                                     "type": "web_url",
+        #                                     "url": "https://originalcoastclothing.com/shop?item=101",
+        #                                     "messenger_extensions": True,
+        #                                     "webview_height_ratio": "tall",
+        #                                     "fallback_url": "https://originalcoastclothing.com/"
+        #                                 }
+        #                             ]
+        #                         }
+        #                     ],
+        #                     "buttons": [
+        #                         {
+        #                             "title": "View More",
+        #                             "type": "postback",
+        #                             "payload": "payload"
+        #                         }
+        #                     ]
+        #                 }
+        #             }
+        #         }
+        #
+        #     }
+        #     response = requests.post(API, json=request_body).json()
+        #     return response
+        elif message['text'] == "Hi":
             request_body = {
                 "recipient": {
                     "id": sender_id
@@ -315,6 +319,53 @@ def fbwebhook():
                 }
             }
             response = requests.post(API, json=request_body).json()
+            return response
+        elif re.search('.*', message['text']):
+            request_body = {
+                "recipient": {
+                    "id": sender_id
+                },
+                "message": {
+                    "text": "Tử Vi, hay Tử Vi Đẩu Số, là một bộ môn huyền học được dùng với các công năng chính như: luận đoán về tính cách, hoàn cảnh, dự đoán về các vận hạn trong cuộc đời của một người đồng thời nghiên cứu tương tác của một người với các sự kiện, nhân sự.... Chung quy với mục đích chính là để biết vận mệnh con người."
+                }
+            }
+            request_body1 = {
+                "recipient": {
+                    "id": sender_id
+                },
+                "message": {
+                    "text": "Tử vi được xây dựng trên cơ sở chính của thuyết thiên văn: Cái Thiên, Hỗn Thiên, Tuyên Dạ và triết lý Kinh Dịch với các thuyết âm dương, ngũ hành, Can Chi. Lá số tử vi bao gồm 12 cung chức, 01 cung an Thân và khoảng 108 sao và được lập thành căn cứ vào giờ, ngày, tháng, năm sinh theo âm lịch và giới tính và lý giải những diễn biến xảy ra trong đời người."
+                }
+            }
+            request_body2 = {
+                "recipient": {
+                    "id": sender_id
+                },
+                "message": {
+                    "attachment": {
+                        "type": "template",
+                        "payload": {
+                            "template_type": "button",
+                            "text": "Tử vi là tên một loài hoa màu tím. Từ ngàn xưa Khoa Chiêm tinh Tướng mệnh Đông phương thường dùng loại hoa màu tím này để chiêm bốc. Ngoài ra Tử là Tím, còn Vi là Huyền Diệu. Cũng có người cho rằng tên gọi được lấy từ sao Tử Vi (chúa tể các vì sao), một ngôi sao quan trọng nhất trong môn bói toán này.",
+                            "buttons": [
+                                {
+                                    "type": "web_url",
+                                    "url": "https://vi.wikipedia.org/wiki/T%E1%BB%AD_vi_%C4%91%E1%BA%A9u_s%E1%BB%91",
+                                    "title": "Tử Vi Đẩu Số"
+                                },
+                                {
+                                    "type": "web_url",
+                                    "url": "https://en.wikipedia.org/wiki/Zi_wei_dou_shu",
+                                    "title": "Zi Wei Dou Shu"
+                                },
+                            ]
+                        }
+                    }
+                }
+            }
+            response = requests.post(API, json=request_body).json()
+            response = requests.post(API, json=request_body1).json()
+            response = requests.post(API, json=request_body2).json()
             return response
 
     except:
