@@ -41,7 +41,7 @@ jobs:
           context: .
           # file: ./Dockerfile
           # Note: tags has to be all lower-case
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fb-ziweidoushu-messager-bot/python::latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fb-ziweidoushu-messager-bot/python:latest
           # build on feature branches, push only on main branch
           # push: ${{ github.ref == 'refs/heads/main' }}
           push: true
