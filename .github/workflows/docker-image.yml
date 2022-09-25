@@ -39,7 +39,7 @@ jobs:
         with:
           # relative path to the place where source code with Dockerfile is located
           context: .
-          # file: ./Dockerfile
+          file: ./Dockerfile
           # Note: tags has to be all lower-case
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/fb-ziweidoushu-messager-bot/python:latest
           # build on feature branches, push only on main branch
